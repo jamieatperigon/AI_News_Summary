@@ -1,6 +1,6 @@
 from outlook_reader import fetch_emails
 from summariser import summarise_emails
-from teams_sender import send_to_teams
+from email_sender import send_to_teams
 
 emails = fetch_emails(limit=20)  # Fetch 20 recent emails
 print(f"\nFetched {len(emails)} emails from shared inbox.\n")
