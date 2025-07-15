@@ -8,29 +8,41 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def summarise_emails(email_bodies: list[str]) -> str:
     prompt = f"""
-You are a news summariser for an ESG consultancy. 
-You will receive a list of email text contents. 
-Each contains a news item, client insight, or industry update.
+You are an expert summariser working for an ESG consultancy.
+
+You will receive a list of recent email contents. Each email contains a potential news item, industry development, or client insight.
 
 Your job is to:
-1. Extract the most relevant headlines
-2. Remove duplicates or near-duplicates
-3. Categorise them under:
-   - Regulation & Policy
-   - ESG Research & Stats
-   - AI & Tech
-   - Climate & Natural Resources
-   - Other
-4. Format the result in markdown, e.g.:
+1. Identify and extract only the most relevant headlines — those that may directly affect our business, clients, or how ESG is reported or regulated.
+2. Filter out anything generic or low-impact — such as internal regulatory process changes, minor corporate updates, or global news not affecting UK policy or financial institutions.
+3. Categorise the final headlines under these strict groups:
+   - REGULATION & POLICY
+   - ESG RESEARCH & STATS
+   - AI & TECH
+   - CLIMATE & NATURAL RESOURCES
+   - OTHER
 
-**Regulation & Policy**
-- FCA launches ESG stress tests for banks  
-- New UK rules mandate carbon reporting for mid-sized firms  
+Our business is primarily interested in:
+- Regulatory, policy or legislative environmental updates affecting UK businesses — especially retail banks, EV charging infrastructure, PE GPs, and mid-sized UK companies (~100–1,000 employees).
+- The four long-term forces shaping ESG: AI/tech disruption, climate change, natural resource risks, and financial regulation.
+- UK financial sector shifts: M&A, strategy changes, fines, or propositions in banking or private equity.
 
-**AI & Tech**
-- OpenAI releases GPT-5 roadmap
+Please apply *contextual judgement*. For example:
+- "FCA introduces faster enforcement investigations" → NOT relevant
+- "UK mandates carbon disclosure for private equity portfolio firms" → RELEVANT
 
-Here are the emails:
+Your output should be concise and email-ready using plain formatting.
+Use **capitalised section headings**, and a clean dash `-` or asterisk `*` for each bullet:
+
+Example:
+REGULATION & POLICY  
+- UK launches ESG audit standards for mid-sized firms  
+- FCA requires Scope 3 disclosures in banking stress tests  
+
+CLIMATE & NATURAL RESOURCES  
+- UK insurers report £2.3B climate-related losses in 2024  
+
+Here are the emails:  
 {email_bodies}
 """
 

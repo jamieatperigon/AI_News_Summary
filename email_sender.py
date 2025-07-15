@@ -1,13 +1,14 @@
 import requests
 import os
 from dotenv import load_dotenv
-from auth import get_access_token
+from auth import get_graph_token as get_access_token
 
 load_dotenv()
 
 def send_summary_email(subject, body_text, recipients):
     token = get_access_token()
-    url = "https://graph.microsoft.com/v1.0/me/sendMail"
+    user_email = os.getenv("SENDER_EMAIL")  # Add to .env
+    url = f"https://graph.microsoft.com/v1.0/users/{user_email}/sendMail"
     headers = {
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json"
