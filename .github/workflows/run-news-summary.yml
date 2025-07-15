@@ -2,7 +2,7 @@ name: Run News Summary Script
 
 on:
   schedule:
-    - cron: '43 14 * * *'   # Mondays at 9:05am UTC
+    - cron: '44 13 * * *'   # Mondays at 9:05am UTC
     - cron: '5 9 * * 4'   # Thursdays at 9:05am UTC
 
 jobs:
