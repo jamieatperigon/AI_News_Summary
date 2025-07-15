@@ -4,9 +4,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# connecting to the API
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def summarise_emails(email_bodies: list[str]) -> tuple[str, str]:
+# GPT prompt
     prompt = f"""
 You are a news summariser for an ESG consultancy in the UK.
 
@@ -64,7 +66,7 @@ Only include items that meet the criteria above.
 Here are the emails:
 {email_bodies}
 """
-
+#  chatGPT settings, and setup
     response = client.chat.completions.create(
         model="gpt-4o",
         messages=[

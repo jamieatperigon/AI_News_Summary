@@ -5,6 +5,7 @@ from auth import get_graph_token as get_access_token
 
 load_dotenv()
 
+# takes inputs from varies files, put them together to form the actual email, then sends it
 def send_summary_email(subject, body_text, recipients):
     token = get_access_token()
     user_email = os.getenv("SENDER_EMAIL")  # Add to .env

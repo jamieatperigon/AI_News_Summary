@@ -32,18 +32,18 @@ if __name__ == "__main__":
     emails = fetch_emails(last_run_time)  # Fetch recent emails
     print(f"\nFetched {len(emails)} emails from shared inbox.\n")
 
-    # summary, usage_summary = summarise_emails(emails)
-    summary = "This is your summary, no openAI call"
+    # ADJUST IF TESTING 
+    summary, usage_summary = summarise_emails(emails) #turn off to test without GPT, turn line below on
+    # summary = "This is your summary, no openAI call" #turn on for testing, provided line above is turned off
+
+    # GPT output
     print("\n--- Summary ---\n")
     print(summary)
 
-    # check tokens ?/
     token = get_graph_token()
-    print("✅ Access token retrieved successfully!")
-    # print(token[:100] + "...")  # Print only first 100 chars
+    # print("✅ Access token retrieved successfully!") can enable if you want, it works, i dont need to see it every time
 
     archive_folder_id = get_folder_id(token, SHARED_MAILBOX, "SummarisedArchive")
-
 
     # send email
     send_summary_email(
@@ -57,27 +57,21 @@ if __name__ == "__main__":
         message_id = email["id"]
         subject = email["subject"]
 
-        print(f"📧 Email from: {sender}")
-        # print(f"📝 Subject: {subject}")
-        # print(f"📎 Message ID: {message_id}")
-
         if sender in ARCHIVE_SENDERS:
-            print(sender)
             print(f"📥 Archiving: {subject} [{sender}]")
             move_email(token, message_id, SHARED_MAILBOX, archive_folder_id)
         else:
-            print("tryign to delete...")
             move_email(token, message_id, SHARED_MAILBOX, "deletedItems")
         # elif sender in DELETE_SENDERS:
         #     print(f"🗑️ Deleting: {subject} [{sender}]")
         #     move_email(token, message_id, SHARED_MAILBOX, "deletedItems")
 
 
-    # Overwrite last sent email
+    # Overwrite last sent email datetime
     with open(last_run_file, "w") as f:
         now_utc = datetime.now(timezone.utc).isoformat()
         f.write(now_utc)
 
-    # print(usage_summary)  # Only works if GPT is enabled
+    print(usage_summary)  # Only works if GPT is enabled
 
 
