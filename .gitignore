@@ -6,3 +6,7 @@ __pycache__/
 
 # Ignore environment variables and secrets
 .env
+
+last_run.txt
+
+this is a random DB.db
