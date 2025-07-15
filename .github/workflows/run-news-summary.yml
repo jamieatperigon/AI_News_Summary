@@ -4,7 +4,7 @@ name: Run News Summary Script
 on:
   workflow_dispatch:
   schedule:
-    - cron: '44 13 * * *'   # Mondays at 9:05am UTC
+    - cron: '5 9 * * 1'   # Mondays at 9:05am UTC
     - cron: '5 9 * * 4'   # Thursdays at 9:05am UTC
 
 jobs:
