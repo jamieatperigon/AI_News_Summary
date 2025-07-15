@@ -94,63 +94,125 @@ Prompt engineering is done carefully here to:
 
 ---
 
-# How to change emails that recieve update:
-- in the .env file
-- under the EMAIL_RECIPIENTS=jamie@perigonpartners.co.uk
-- add a comma to the previous email (EMAIL_RECIPIENTS=jamie@perigonpartners.co.uk,)
-- type in the next email, the full address (do not put it in "")
+## 📬 How to Change Email Recipients
 
+To update who receives the final email summaries:
 
-## **🚀 Running This Project Locally**
+1. Open the `.env` file in the project root.
+2. Locate the line:
+   ```env
+   EMAIL_RECIPIENTS=jamie@perigonpartners.co.uk
+   ```
+3. To add another recipient:
+   - Add a comma after the existing email:
+     ```env
+     EMAIL_RECIPIENTS=jamie@perigonpartners.co.uk,
+     ```
+   - Then add the full new email address (no quotes):
+     ```env
+     EMAIL_RECIPIENTS=jamie@perigonpartners.co.uk,new.person@example.com
+     ```
+
+✅ Use commas to separate multiple email addresses.  
+🚫 Do **not** use quotation marks around the emails.
+
+---
+
+## 🚀 Running This Project Locally
 
 ### ✅ Step-by-Step for New Users
 
-    Clone the repo to your local machine:
-        git clone https://github.com/YOUR_ORG/perigon-email-summariser.git
-        cd perigon-email-summariser
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/YOUR_ORG/perigon-email-summariser.git
+   cd perigon-email-summariser
+   ```
 
-Install dependencies:
-    pip install -r requirements.txt
+2. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-Set up .env file:
-    Create a .env file in the project root with:
-        OPENAI_API_KEY=sk-...
-        TENANT_ID=...
-        CLIENT_ID=...
-        TEAMS_WEBHOOK_URL=https://...
+3. **Set up environment variables:**
+   - Create a `.env` file in the root folder:
+     ```env
+     OPENAI_API_KEY=sk-...
+     TENANT_ID=your-tenant-id
+     CLIENT_ID=your-client-id
+     TEAMS_WEBHOOK_URL=https://...
+     EMAIL_RECIPIENTS=your@email.com
+     ```
 
-Authenticate once:
-    python auth.py
+4. **Authenticate with Microsoft:**
+   ```bash
+   python auth.py
+   ```
 
-Run the full script:
-    python main.py
+5. **Run the full script manually:**
+   ```bash
+   python main.py
+   ```
 
+---
 
-## **⏰ Automation on Railway**
+## ⏰ Automation on Railway
 
-This script is scheduled to run every:
-Monday at 09:05 AM
-Thursday at 09:05 AM
+This project runs automatically:
 
-### 🛠️ Config:
-    Railway’s cron-like scheduler triggers python main.py.
-    Deploy via Railway using the web UI or railway up.
+- **Every Monday at 09:05 AM**
+- **Every Thursday at 09:05 AM**
 
-### 📚 Learn (Search in Google/ChatGPT):
-    Railway Docs
-    Cron syntax guide
+### 🛠️ Railway Setup
 
+- Railway's cron-like scheduler triggers:
+  ```bash
+  python main.py
+  ```
 
-## **📌 Editing Email Rules**
+- Deploy to Railway via:
+  ```bash
+  railway up
+  ```
 
-If someone in the future wants to:
-    Change which emails get archived or deleted...
-        → Open outlook_reader.py, scroll to the end, and edit ARCHIVE_SENDERS and DELETE_SENDERS.
-    Follow the sytax as it is previously...
+### 📚 Resources to Learn
 
-## **📞 Help & Contact**
-If you have any issues, want help understanding the code, or need guidance on how any of the technologies work:
+If you're new to these tools, search for:
+- `Railway Python deploy`
+- `Railway scheduling cron job`
+- `crontab.guru` (for cron syntax help)
 
-Contact Jamie Thomson
-📧 Jamie.wlt@outlook.com
+---
+
+## 📌 Editing Email Archiving Rules
+
+To change how emails are treated after processing:
+
+1. Open `outlook_reader.py`.
+2. Scroll to the bottom.
+3. Locate the sender lists:
+   ```python
+   ARCHIVE_SENDERS = [
+       "Bloomberg Green", 
+       "David Carlin", 
+       ...
+   ]
+
+   DELETE_SENDERS = [
+       "FT Climate Capital", 
+       "Edie.net", 
+       ...
+   ]
+   ```
+
+✏️ Simply add or remove names to these lists.  
+📌 Keep the formatting exactly the same.
+
+---
+
+## 📞 Help & Contact
+
+If anything breaks, seems confusing, or you're new to Python and want to learn:
+
+**Contact: Jamie Thomson**  
+📧 Jamie.wlt@outlook.com  
 📱 07708012486
