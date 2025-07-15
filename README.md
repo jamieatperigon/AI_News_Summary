@@ -94,16 +94,16 @@ Prompt engineering is done carefully here to:
 
 ---
 
-How to change emails that recieve update:
+# How to change emails that recieve update:
 - in the .env file
 - under the EMAIL_RECIPIENTS=jamie@perigonpartners.co.uk
 - add a comma to the previous email (EMAIL_RECIPIENTS=jamie@perigonpartners.co.uk,)
 - type in the next email, the full address (do not put it in "")
 
 
-**🚀 Running This Project Locally**
+## **🚀 Running This Project Locally**
 
-# ✅ Step-by-Step for New Users
+### ✅ Step-by-Step for New Users
 
     Clone the repo to your local machine:
         git clone https://github.com/YOUR_ORG/perigon-email-summariser.git
@@ -126,29 +126,29 @@ Run the full script:
     python main.py
 
 
-**⏰ Automation on Railway**
+## **⏰ Automation on Railway**
 
 This script is scheduled to run every:
 Monday at 09:05 AM
 Thursday at 09:05 AM
 
-# 🛠️ Config:
+### 🛠️ Config:
     Railway’s cron-like scheduler triggers python main.py.
     Deploy via Railway using the web UI or railway up.
 
-# 📚 Learn (Search in Google/ChatGPT):
+### 📚 Learn (Search in Google/ChatGPT):
     Railway Docs
     Cron syntax guide
 
 
-**📌 Editing Email Rules**
+## **📌 Editing Email Rules**
 
 If someone in the future wants to:
     Change which emails get archived or deleted...
         → Open outlook_reader.py, scroll to the end, and edit ARCHIVE_SENDERS and DELETE_SENDERS.
     Follow the sytax as it is previously...
 
-**📞 Help & Contact**
+## **📞 Help & Contact**
 If you have any issues, want help understanding the code, or need guidance on how any of the technologies work:
 
 Contact Jamie Thomson
