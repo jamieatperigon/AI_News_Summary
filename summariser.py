@@ -8,43 +8,65 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def summarise_emails(email_bodies: list[str]) -> str:
     prompt = f"""
-You are an expert summariser working for an ESG consultancy.
+You are a news summariser for an ESG consultancy in the UK.
 
-You will receive a list of recent email contents. Each email contains a potential news item, industry development, or client insight.
+You will receive a list of raw email contents containing ESG-related news, research, regulatory updates, or industry developments.
 
-Your job is to:
-1. Identify and extract only the most relevant headlines — those that may directly affect our business, clients, or how ESG is reported or regulated.
-2. Filter out anything generic or low-impact — such as internal regulatory process changes, minor corporate updates, or global news not affecting UK policy or financial institutions.
-3. Categorise the final headlines under these strict groups:
-   - REGULATION & POLICY
-   - ESG RESEARCH & STATS
-   - AI & TECH
-   - CLIMATE & NATURAL RESOURCES
-   - OTHER
+Your job is to produce a **visually engaging, concise summary email**, broken into sections.
 
-Our business is primarily interested in:
-- Regulatory, policy or legislative environmental updates affecting UK businesses — especially retail banks, EV charging infrastructure, PE GPs, and mid-sized UK companies (~100–1,000 employees).
-- The four long-term forces shaping ESG: AI/tech disruption, climate change, natural resource risks, and financial regulation.
-- UK financial sector shifts: M&A, strategy changes, fines, or propositions in banking or private equity.
+---
 
-Please apply *contextual judgement*. For example:
-- "FCA introduces faster enforcement investigations" → NOT relevant
-- "UK mandates carbon disclosure for private equity portfolio firms" → RELEVANT
+🧠 **Instructions:**
+1. **Summarise only the most relevant items** — those that directly impact ESG reporting or strategic decision-making, especially:
+   - UK and European regulation or policy
+   - Banking, EV infrastructure, private equity
+   - ESG disclosure standards or implementation guidance
+   - Tangible climate-related developments (e.g. losses, weather, tipping points)
+2. **Avoid quoting politicians or general opinion pieces.** Ignore "Minister says X", "CEO calls for Y" — we want news with actionable consequences.
+3. **Choose only the best stories**. From the full input, limit each section to:
+   - REGULATION & POLICY: **max 6**
+   - ESG RESEARCH & STATS: **max 3**
+   - AI & TECH: **max 2**
+   - CLIMATE & NATURAL RESOURCES: **max 2**
+   - OTHER: **max 4**
 
-Your output should be concise and email-ready using plain formatting.
-Use **capitalised section headings**, and a clean dash `-` or asterisk `*` for each bullet:
+4. After generating your list, **double-check that no two headlines describe the same event or finding.** Deduplicate if necessary.
 
-Example:
-REGULATION & POLICY  
-- UK launches ESG audit standards for mid-sized firms  
-- FCA requires Scope 3 disclosures in banking stress tests  
+---
 
-CLIMATE & NATURAL RESOURCES  
-- UK insurers report £2.3B climate-related losses in 2024  
+📬 **Formatting Rules (for Outlook)**:
+- Use UPPERCASE section titles with relevant emojis.
+- Use `-` for bullet points (no markdown).
+- Make each bullet **concise**: summarise the key headline only.
+- Do not use `**`, `_`, or `#` — stick to plain text formatting.
 
-Here are the emails:  
+---
+
+🎯 **Example Format:**
+
+📜 REGULATION & POLICY  
+- UK launches mandatory ESG audits for mid-sized firms  
+- FCA consults on Scope 3 reporting for banks  
+
+📊 ESG RESEARCH & STATS  
+- Carbon Tracker finds 85% of UK pensions miss net-zero targets  
+
+🤖 AI & TECH  
+- EU finalises AI Act enforcement timeline  
+
+🌍 CLIMATE & NATURAL RESOURCES  
+- July storms cause £1.4B insured losses across Europe  
+
+📌 OTHER  
+- PwC launches ESG due diligence team for private equity deals  
+
+---
+
+Only include items if they meet the relevance standard above.  
+Here are the emails:
 {email_bodies}
 """
+
 
     response = client.chat.completions.create(
         model="gpt-4o",
@@ -56,4 +78,25 @@ Here are the emails:
         max_tokens=1000,
     )
 
-    return response.choices[0].message.content
+    summary = response.choices[0].message.content
+
+        # --- Token + Cost logging ---
+    prompt_tokens = response.usage.prompt_tokens
+    completion_tokens = response.usage.completion_tokens
+    total_tokens = response.usage.total_tokens
+
+    prompt_cost = prompt_tokens * 0.01 / 1000
+    completion_cost = completion_tokens * 0.03 / 1000
+    total_cost = prompt_cost + completion_cost
+
+    usage_summary = (
+    f"[OpenAI Usage] \n"
+    f"Prompt tokens: {prompt_tokens}\n "
+    f"Completion tokens: {completion_tokens}\n "
+    f"Total tokens: {total_tokens}\n "
+    f"Estimated cost: ${total_cost:.4f} USD"
+)
+
+
+
+    return response.choices[0].message.content, usage_summary
