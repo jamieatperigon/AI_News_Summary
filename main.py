@@ -43,8 +43,8 @@ if __name__ == "__main__":
     token = get_graph_token()
     # print("✅ Access token retrieved successfully!") can enable if you want, it works, i dont need to see it every time
 
-    archive_folder_id = get_folder_id(token, SHARED_MAILBOX, "SummarisedArchive")
-
+    SumArchive_folder_id = get_folder_id(token, SHARED_MAILBOX, "SummarisedArchive")
+    TestDelete_folder_id = get_folder_id(token, SHARED_MAILBOX, "TestDelete")
     # send email
     send_summary_email(
     subject=email_subject,
@@ -59,9 +59,10 @@ if __name__ == "__main__":
 
         if sender in ARCHIVE_SENDERS:
             print(f"📥 Archiving: {subject} [{sender}]")
-            move_email(token, message_id, SHARED_MAILBOX, archive_folder_id)
+            move_email(token, message_id, SHARED_MAILBOX, SumArchive_folder_id)
         else:
-            move_email(token, message_id, SHARED_MAILBOX, "deletedItems")
+            print(f"📥 Would be deleted (Testing): {subject} [{sender}]")
+            move_email(token, message_id, SHARED_MAILBOX, TestDelete_folder_id)
         # elif sender in DELETE_SENDERS:
         #     print(f"🗑️ Deleting: {subject} [{sender}]")
         #     move_email(token, message_id, SHARED_MAILBOX, "deletedItems")

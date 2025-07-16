@@ -88,7 +88,7 @@ def fetch_emails(since_time: datetime):
 
 # getting folder ID from folder name so that emails can be sent to correct folder
 def get_folder_id(token, mailbox, folder_display_name):
-    url = f"{GRAPH_API_BASE}/users/{mailbox}/mailFolders"
+    url = f"{GRAPH_API_BASE}/users/{mailbox}/mailFolders?$top=50"
     headers = {"Authorization": f"Bearer {token}"}
     response = requests.get(url, headers=headers)
     # error catching
