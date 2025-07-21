@@ -1,20 +1,18 @@
 import os
-from openai import OpenAI
+from openai import OpenAI, error as openai_error
 from dotenv import load_dotenv
+import tiktoken
 
 load_dotenv()
-
-# connecting to the API
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-def summarise_emails(email_bodies: list[str]) -> tuple[str, str]:
-# GPT prompt
-    prompt = f"""
+def _build_prompt(email_bodies: list[str]) -> str:
+    return f"""
 You are a news summariser for an ESG consultancy in the UK.
 
 You will receive a list of raw email contents containing ESG-related news, research, regulatory updates, or industry developments.
 
-Your job is to produce a visually engaging, concise summary email, broken into sections.
+Your job is to produce a visually engaging, concise summary xemail, broken into sections.
 
 ---
 
@@ -66,7 +64,17 @@ Only include items that meet the criteria above.
 Here are the emails:
 {email_bodies}
 """
-#  chatGPT settings, and setup
+
+def _estimate_tokens(text: str, model: str = "gpt-4o") -> int:
+    try:
+        enc = tiktoken.encoding_for_model(model)
+        return len(enc.encode(text))
+    except Exception:
+        return len(text.split())  # fallback estimate
+
+def _summarise_emails_inner(email_bodies: list[str]) -> tuple[str, str]:
+    prompt = _build_prompt(email_bodies)
+
     response = client.chat.completions.create(
         model="gpt-4o",
         messages=[
@@ -78,8 +86,6 @@ Here are the emails:
     )
 
     summary = response.choices[0].message.content
-
-    # --- Token + Cost logging ---
     prompt_tokens = response.usage.prompt_tokens
     completion_tokens = response.usage.completion_tokens
     total_tokens = response.usage.total_tokens
@@ -97,3 +103,30 @@ Here are the emails:
     )
 
     return summary, usage_summary
+
+def summarise_emails(email_bodies: list[str]) -> tuple[str, str, list[str]]:
+    trimmed = email_bodies[:]
+    reduction_step = 1
+
+    while trimmed:
+        try:
+            est_tokens = _estimate_tokens(_build_prompt(trimmed))
+            if est_tokens > 7000:
+                raise openai_error.InvalidRequestError("Token estimate too high", None)
+
+            summary, usage = _summarise_emails_inner(trimmed)
+            return summary, usage, trimmed  # return used emails
+
+        except openai_error.InvalidRequestError as e:
+            if "maximum context length" in str(e) or "token" in str(e).lower():
+                if len(trimmed) > 50:
+                    reduction_step = 5
+                elif len(trimmed) > 20:
+                    reduction_step = 3
+                else:
+                    reduction_step = 1
+                trimmed = trimmed[:-reduction_step]
+            else:
+                raise
+
+    raise RuntimeError("Could not summarise any emails within token limit.")
