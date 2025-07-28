@@ -43,11 +43,10 @@ def fetch_emails(since_time: datetime):
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json"
     }
-# only takes emails that have been sent since it was last run
+
     filter_datetime = since_time.isoformat()
     filter_clause = quote(f"receivedDateTime gt {filter_datetime}")
 
-# comment out the URL below for testing, and uncomment the second URL, and vice versa
     url = (
         f"{GRAPH_API_BASE}/users/{SHARED_MAILBOX}/mailFolders/inbox/messages"
         f"?$filter={filter_clause}"
@@ -55,36 +54,38 @@ def fetch_emails(since_time: datetime):
         f"&$top=100"
     )
 
-# 🔵 Use this line for testing – fetch most recent 20 emails regardless of time
-    # url = (
-    #     f"{GRAPH_API_BASE}/users/{SHARED_MAILBOX}/mailFolders/inbox/messages"
-    #     f"?$orderby=receivedDateTime desc"
-    #     f"&$top=6"
-    # )
-
     response = requests.get(url, headers=headers)
 
-    # error catching
     if response.status_code != 200:
         raise Exception(f"Failed to fetch emails: {response.status_code} - {response.text}")
 
-# puts data from emails into dictionary, to be used partly for GPT prompt and partly for accurate email filing
     data = response.json()
     messages = data.get("value", [])
     email_data = []
-    for msg in messages:
-        subject = msg.get("subject", "[No Subject]")
-        body_preview = msg.get("body", {}).get("content", "")
-        sender_email = msg.get("sender", {}).get("emailAddress", {}).get("address", "").lower()
-        message_id = msg.get("id")
 
-        email_data.append({
-            "id": message_id,
-            "subject": subject,
-            "sender": sender_email,
-            "content": f"{subject}\n{strip_html(body_preview)}"
-        })
+    for msg in messages:
+        try:
+            subject = msg.get("subject") or "[No Subject]"
+            body_html = (msg.get("body") or {}).get("content", "") or ""
+            sender_email = (msg.get("sender") or {}).get("emailAddress", {}).get("address", "[Unknown Sender]").lower()
+            message_id = msg.get("id", "[Missing ID]")
+
+            # Convert HTML safely to text
+            clean_body = strip_html(body_html) if body_html else "[No Content]"
+
+            email_data.append({
+                "id": message_id,
+                "subject": subject,
+                "sender": sender_email,
+                "body": clean_body  # ✅ standardized key used by summariser.py
+            })
+
+        except Exception as e:
+            print(f"[WARN] Skipping malformed email entry: {e}")
+            continue
+
     return email_data
+
 
 # getting folder ID from folder name so that emails can be sent to correct folder
 def get_folder_id(token, mailbox, folder_display_name):
