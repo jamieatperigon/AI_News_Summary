@@ -51,7 +51,7 @@ def fetch_emails(since_time: datetime):
         f"{GRAPH_API_BASE}/users/{SHARED_MAILBOX}/mailFolders/inbox/messages"
         f"?$filter={filter_clause}"
         f"&$orderby=receivedDateTime desc"
-        f"&$top=100"
+        f"&$top=30"
     )
 
     response = requests.get(url, headers=headers)
