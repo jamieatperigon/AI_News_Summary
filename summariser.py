@@ -1,5 +1,6 @@
 import os
-from openai import OpenAI, error as openai_error
+from openai import OpenAI
+import openai
 from dotenv import load_dotenv
 import tiktoken
 
@@ -12,7 +13,7 @@ You are a news summariser for an ESG consultancy in the UK.
 
 You will receive a list of raw email contents containing ESG-related news, research, regulatory updates, or industry developments.
 
-Your job is to produce a visually engaging, concise summary xemail, broken into sections.
+Your job is to produce a visually engaging, concise summary email, broken into sections.
 
 ---
 
@@ -112,13 +113,13 @@ def summarise_emails(email_bodies: list[str]) -> tuple[str, str, list[str]]:
         try:
             est_tokens = _estimate_tokens(_build_prompt(trimmed))
             if est_tokens > 7000:
-                raise openai_error.InvalidRequestError("Token estimate too high", None)
+                raise openai.OpenAIError("Token estimate too high")
 
             summary, usage = _summarise_emails_inner(trimmed)
             return summary, usage, trimmed  # return used emails
 
-        except openai_error.InvalidRequestError as e:
-            if "maximum context length" in str(e) or "token" in str(e).lower():
+        except openai.OpenAIError as e:
+            if "maximum context length" in str(e).lower() or "token" in str(e).lower():
                 if len(trimmed) > 50:
                     reduction_step = 5
                 elif len(trimmed) > 20:
