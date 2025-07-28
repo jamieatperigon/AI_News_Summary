@@ -6,11 +6,27 @@ from datetime import datetime, timezone, timedelta
 from auth import get_graph_token
 from outlook_reader import move_email, ARCHIVE_SENDERS, DELETE_SENDERS, SHARED_MAILBOX, get_folder_id
 
-# --- Create subject title ---
-today = datetime.now()
-weekday_name = today.strftime("%A")
-date_str = today.strftime("%-d/%-m")
+# --- Create subject title --- normal subject maker, change for retro running
+# today = datetime.now()
+# weekday_name = today.strftime("%A")
+# date_str = today.strftime("%-d/%-m")
+# email_subject = f"🗞️ {weekday_name} News Update: {date_str}"
+
+# --- Load last run time ---
+last_run_file = "last_run.txt"
+try:
+    with open(last_run_file, "r") as f:
+        last_run_str = f.read().strip()
+        last_run_time = datetime.fromisoformat(last_run_str)
+except (FileNotFoundError, ValueError):
+    print("⚠️ last_run.txt missing or invalid, defaulting to 3 days ago.")
+    last_run_time = datetime.now(timezone.utc) - timedelta(days=3)
+
+# --- Create subject title based on last_run.txt ---
+weekday_name = last_run_time.strftime("%A")
+date_str = last_run_time.strftime("%-d/%-m")
 email_subject = f"🗞️ {weekday_name} News Update: {date_str}"
+
 
 if __name__ == "__main__":
     try:
