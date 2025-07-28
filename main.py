@@ -15,15 +15,16 @@ ARCHIVE_SENDERS = {
 }
 
 DELETE_SENDERS = {
-    "news@edie.net",
-    "firstft@ft.com",
-    "instant@ft.com",
-    "newsletter@sifted.eu",
-    "climatecapital@ft.com",
-    "insights@mckinsey.com",
-    "stats@worldpopulationreview.com",
-    "notifications@gov.uk",
-    "updates@fca.org.uk"
+    "ea.newsmailer@environment-analyst.com",
+    "energymix@iea.org",
+    "fca@fcanewsletters.org.uk",
+    "myft@news-alerts.ft.com",
+    "news@daily.therundown.ai",
+    "newslist@edie.net",
+    "publishing@email.mckinsey.com",
+    "realimpact@gsgii.org",
+    "sifted@sifted.eu",
+    "wpr-newsletter@mail.beehiiv.com",
 }
 
 # --- Load last run time ---
@@ -121,9 +122,18 @@ if __name__ == "__main__":
 
             # Log unknown senders for review
             if unknown_senders:
-                with open("unknown_senders_log.txt", "w") as log_file:
-                    log_file.write("\n".join(sorted(unknown_senders)))
-                print(f"📄 Logged {len(unknown_senders)} unknown senders to unknown_senders_log.txt.")
+                log_file = "unknown_senders_log.txt"
+                existing_unknowns = set()
+                if os.path.exists(log_file):
+                    with open(log_file, "r") as f:
+                        existing_unknowns = {line.strip().lower() for line in f if line.strip()}
+
+                updated_unknowns = sorted(existing_unknowns.union(unknown_senders))
+                with open(log_file, "w") as log_file:
+                    log_file.write("\n".join(updated_unknowns))
+
+                print(f"📄 Logged {len(unknown_senders)} new unknown senders (total: {len(updated_unknowns)}).")
+
         else:
             print("⚠️ Skipping email move (missing folder IDs).")
 

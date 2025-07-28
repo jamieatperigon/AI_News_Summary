@@ -60,10 +60,21 @@ def fetch_emails(since_time: datetime):
         url = data.get("@odata.nextLink")
 
     # Log unique senders for review (to help maintain DELETE/ARCHIVE lists in main.py)
-    unique_senders = sorted(set(email["sender"] for email in all_emails))
-    with open("unique_senders_log.txt", "w") as log_file:
-        log_file.write("\n".join(unique_senders))
-    print(f"📄 Logged {len(unique_senders)} unique senders to unique_senders_log.txt")
+        # Log all unique senders cumulatively
+    log_file = "unique_senders_log.txt"
+    existing_senders = set()
+    if os.path.exists(log_file):
+        with open(log_file, "r") as f:
+            existing_senders = {line.strip().lower() for line in f if line.strip()}
+
+    current_senders = {email["sender"].lower() for email in all_emails}
+    all_senders = sorted(existing_senders.union(current_senders))
+
+    with open(log_file, "w") as f:
+        f.write("\n".join(all_senders))
+
+    print(f"📄 Updated {log_file} with {len(current_senders)} new senders (total: {len(all_senders)})")
+
 
     return all_emails
 

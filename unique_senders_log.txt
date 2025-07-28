@@ -1,5 +1,5 @@
-ea.newsmailer@environment-analyst.com
-energymix@iea.org
+catherine.radojcin@eco-act.com
+energysnapshot@iea.org
 fca@fcanewsletters.org.uk
 ft@newsletters.ft.com
 info@eciu.net
@@ -9,6 +9,5 @@ news@e.privateequityinternational.com
 newslist@edie.net
 noreply@news.bloomberg.com
 publishing@email.mckinsey.com
-realimpact@gsgii.org
 sifted@sifted.eu
 wpr-newsletter@mail.beehiiv.com
